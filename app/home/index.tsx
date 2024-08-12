@@ -1,32 +1,38 @@
 import LocationCEPComponent from "@/components/Cep";
+import api from "@/hooks/axiosConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Button, Card, Input, Layout, Text } from "@ui-kitten/components";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, ScrollView, StyleSheet, View } from "react-native";
+import { Product } from "@/types/Product";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation }: any) {
 
-    const items = [
-        { id: 1, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 2, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 3, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 4, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 5, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 6, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 7, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 8, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 9, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
-        { id: 10, title: 'Camiseta', price: 100.90, seller: 'Vendedor', thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg' },
 
-    ]
+    const [data, setData] = useState<Product[] | undefined>(undefined);
 
-    const [cep, setCep] = useState('');
+    useEffect(() => {
+        const getData = async () => {
+            await api.get('/products/highlighted')
+                .then((response) => {
+                    setData(response.data);
+                    console.log(response.data); 
+                })
+                .catch((error) => {
+                    console.error(error);
+                })
+        }
+        getData();
+    }, [])
+
+
 
 
     const windowWidth = Dimensions.get('window').width;
     const cardWidth = (windowWidth - 40) / 2;
 
-  
+
 
 
     return (
@@ -43,13 +49,13 @@ export default function HomeScreen({ navigation }) {
 
             <LocationCEPComponent />
 
-            <ScrollView contentContainerStyle={styles.cardContainer}> 
-                {items.map((item) => (
+            <ScrollView contentContainerStyle={styles.cardContainer}>
+                {!!data && data.map((item) => (
                     <Card
                         key={item.id}
                         style={[styles.card, { width: cardWidth, height: (cardWidth * 210) / 136 }]}
                         onPress={() => navigation.navigate('product-details', { id: item.id })}
-                    
+
                     >
                         <Image
                             source={{ uri: item.thumbnailHd }}
@@ -59,7 +65,7 @@ export default function HomeScreen({ navigation }) {
                         <Text category="s1" status="primary" style={styles.price}>R$ {item.price.toFixed(2)}</Text>
                         <Text appearance="hint">{item.seller}</Text>
                     </Card>
-                ))} 
+                ))}
             </ScrollView>
 
 
@@ -94,11 +100,6 @@ const styles = StyleSheet.create({
     button: {
         marginRight: 10,
     },
-    cardContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-    },
     card: {
         marginBottom: 20,
         alignItems: 'center',
@@ -120,5 +121,5 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         marginTop: 20,
     },
-   
+
 });

@@ -5,8 +5,8 @@ import * as Location from 'expo-location';
 import axios from 'axios';
 
 export default function LocationCEPComponent() {
-    const [location, setLocation] = useState(null);
-    const [errorMsg, setErrorMsg] = useState(null);
+    const [location, setLocation] = useState<any | null>(null);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [cep, setCep] = useState('');
 
     useEffect(() => {
@@ -25,7 +25,7 @@ export default function LocationCEPComponent() {
         })();
     }, []);
 
-    const getCEPFromLocation = async (latitude, longitude) => {
+    const getCEPFromLocation = async (latitude: number, longitude: number) => {
         try {
             const response = await axios.get(`https://nominatim.openstreetmap.org/reverse`, {
                 params: {
@@ -76,11 +76,8 @@ export default function LocationCEPComponent() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
+    container: { 
+        backgroundColor: '#222B45',
     },
     paragraph: {
         fontSize: 14,
@@ -90,6 +87,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginVertical: 10,
         textAlign: 'center',
-        color: '#fff',
+        color: '#fff', 
     },
 });

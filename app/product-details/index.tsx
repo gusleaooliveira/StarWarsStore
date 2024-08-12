@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import { Layout, Text, Button } from '@ui-kitten/components';
+import axios from '@/hooks/axiosConfig';
+import LocationCEPComponent from '@/components/Cep';
+import { Product } from '@/types/Product';
+import Carousel from 'react-native-reanimated-carousel';
 
-const ProductDetail = ({ route, navigation }) => {
+const { width } = Dimensions.get('window');
+
+const ProductDetail = ({ route, navigation }: any) => {
     const { id } = route.params;
-    const [product, setProduct] = useState(null);
+    const [product, setProduct] = useState<Product | null>(null);
 
     useEffect(() => {
-        // Simula a recuperação de dados do produto
         const fetchProduct = async () => {
-            // Substitua pela lógica real de busca do produto, por exemplo, uma chamada à API
-            const fetchedProduct = {
-                id,
-                title: 'Camiseta',
-                price: 100.90,
-                seller: 'Vendedor',
-                description: 'Uma camiseta incrível e confortável.',
-                thumbnailHd: 'https://i.imgur.com/34k3maY.jpeg',
-            };
-            setProduct(fetchedProduct);
+            try {
+                const response = await axios.get(`/products/${id}`);
+                setProduct(response.data);
+                console.log(response.data);
+                
+            } catch (error) {
+                console.error('Error fetching product:', error);
+            }
         };
 
         fetchProduct();
@@ -30,17 +33,33 @@ const ProductDetail = ({ route, navigation }) => {
 
     return (
         <ScrollView style={{ flex: 1 }}>
+            <LocationCEPComponent />
             <Layout style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollView}>
-                    <Image source={{ uri: product.thumbnailHd }} style={styles.image} />
-                    <Text category='h1' style={styles.title}>{product.title}</Text>
-                    <Text category='h6' style={styles.price}>R$ {product.price.toFixed(2)}</Text>
-                    <Text style={styles.seller}>Vendedor: {product.seller}</Text>
-                    <Text style={styles.description}>{product.description}</Text>
-                    <Button style={styles.button} onPress={() => navigation.goBack()}>
-                        Voltar
-                    </Button>
-                </ScrollView>
+                <Carousel
+                    width={width}
+                    height={width * 0.9}
+                    data={product.images}
+                    renderItem={({ item }: { item: string }) => (
+                        <View style={styles.carouselContainer}>
+                            <Image source={{ uri: item }} style={styles.carouselImage} />
+                        </View>
+                    )}
+                />
+                <Text category='h1' style={styles.title}>{product.title}</Text>
+                <Text category='h6' style={styles.price}>R$ {product.price.toFixed(2)}</Text>
+                <Text style={styles.seller}>Vendedor: {product.seller}</Text>
+                <Text style={styles.description}>{product.description}</Text>
+                <Text style={styles.category}>Categoria: {product.category}</Text>
+                <Text style={styles.stock}>Estoque: {product.stock}</Text>
+                <Text style={styles.rating}>Avaliação: {product.rating}</Text>
+                <Text style={styles.reviewsCount}>Número de Avaliações: {product.reviewsCount}</Text>
+                <Text style={styles.brand}>Marca: {product.brand}</Text>
+                <Text style={styles.sku}>SKU: {product.sku}</Text>
+                <Text style={styles.weight}>Peso: {product.weight} kg</Text>
+                <Text style={styles.dimensions}>Dimensões: {product.dimensions}</Text>
+                <Button style={styles.button} onPress={() => navigation.goBack()}>
+                    Voltar
+                </Button>
             </Layout>
         </ScrollView>
     );
@@ -51,13 +70,15 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
     },
-    scrollView: {
+    carouselContainer: {
+        justifyContent: 'center',
         alignItems: 'center',
+        width: '100%',
+        height: '100%',
     },
-    image: {
-        width: Dimensions.get('window').width * 0.9,
-        height: Dimensions.get('window').width * 0.9,
-        marginBottom: 20,
+    carouselImage: {
+        width: '100%',
+        height: '100%',
         resizeMode: 'contain',
     },
     title: {
@@ -72,6 +93,30 @@ const styles = StyleSheet.create({
     description: {
         marginBottom: 20,
         textAlign: 'center',
+    },
+    category: {
+        marginBottom: 10,
+    },
+    stock: {
+        marginBottom: 10,
+    },
+    rating: {
+        marginBottom: 10,
+    },
+    reviewsCount: {
+        marginBottom: 10,
+    },
+    brand: {
+        marginBottom: 10,
+    },
+    sku: {
+        marginBottom: 10,
+    },
+    weight: {
+        marginBottom: 10,
+    },
+    dimensions: {
+        marginBottom: 10,
     },
     button: {
         marginTop: 20,
