@@ -1,16 +1,20 @@
-import axios from "axios"; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000',
-    timeout: 10000,
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
+  baseURL: 'https://c71631bb2459ee935fd9cbbf853e3c4d.serveo.net',  // Substitua pelo URL da sua API
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-api.interceptors.request.use(function (config) {
-    config.headers.Authorization = 'Bearer ' + localStorage.getItem('token');
-    return config;
+api.interceptors.request.use(async config => {
+  const token = await AsyncStorage.getItem('user');
+  if (token) {
+    config.headers.Authorization = `Bearer ${JSON.parse(token).token}`;
+  }
+  return config;
 });
 
 export default api;

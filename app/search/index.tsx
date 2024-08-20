@@ -1,10 +1,10 @@
 import { Button, Layout, Text } from "@ui-kitten/components";
 
-export default function SearchScreen({ navigation}) {
+export default function SearchScreen({ navigation }: any) {
     return (
         <Layout>
-            <Button onPress={() => navigation.navigate('search') }>Search</Button>
-            <Button onPress={() => navigation.navigate('home') } >Home</Button>
+            <Button onPress={() => navigation.navigate('Search') }>Search</Button>
+            <Button onPress={() => navigation.navigate('Home') } >Home</Button>
             
             <Text>Search</Text>
         </Layout>
