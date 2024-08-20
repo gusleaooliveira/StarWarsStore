@@ -24,6 +24,14 @@ const apiService = {
     return response.data;
   },
 
+  getCartItemsById: async (cartId: string) => { 
+      const response = await api.get(`/cart/${cartId}`);
+      console.log('response', response);
+      
+      return response.data; // Supondo que a API retorne um array de produtos
+    
+  },
+
   getCartItems: async (): Promise<Product[]> => {
     const response = await api.get('/cart');
     return response.data;

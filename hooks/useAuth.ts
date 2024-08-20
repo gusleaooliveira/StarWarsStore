@@ -25,7 +25,7 @@ export function useAuth() {
       
       const data = await apiService.login(email, password);
 
-      await AsyncStorage.setItem('userToken', data.token);
+      await AsyncStorage.setItem('token', data.token);
       await AsyncStorage.setItem('user', JSON.stringify(data.user));
       setUser(user);
       setIsLoggedIn(true);
@@ -38,7 +38,7 @@ export function useAuth() {
     setUser(null);
     setIsLoggedIn(false);
     await AsyncStorage.removeItem('user');
-    await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('token');
     router.replace('/login'); // Navega para a tela de login após logout
   };
 

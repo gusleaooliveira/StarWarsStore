@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, Dimensions, ScrollView, ToastAndroid } from 'react-native';
 import { Layout, Text, Button, Icon } from '@ui-kitten/components';
 import Carousel from 'react-native-reanimated-carousel';
 import LocationCEPComponent from '@/components/Cep';
@@ -7,6 +7,7 @@ import { Product } from '@/types/Product';
 import apiService from '@/service/apiService';
 import { useAuth } from '@/hooks/useAuth';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
@@ -36,20 +37,23 @@ const ProductDetail = ({ route, navigation }: any) => {
         return;
       }
 
-      
       const cartItem = {
         productId: product?.id,
         quantity,
         user: user?.id,
       };
 
-      console.log(cartItem);
-   
+      console.log(cartItem); // Mostrar o ID do produto no console
+      
+      const response = await apiService.addToCart(cartItem);
+      ToastAndroid.show('Produto adicionado ao carrinho!', ToastAndroid.SHORT);
 
-      await apiService.addToCart(cartItem);
-      alert('Produto adicionado ao carrinho!');
+      // Salva o ID do carrinho no AsyncStorage
+      const cartId = response.id; // Supondo que o ID do produto seja o ID do carrinho
+      await AsyncStorage.setItem('cartId', cartId.toString());
     } catch (error) {
       console.error('Erro ao adicionar ao carrinho:', error);
+      ToastAndroid.show('Erro ao adicionar ao carrinho', ToastAndroid.SHORT);
     }
   };
 
@@ -75,6 +79,7 @@ const ProductDetail = ({ route, navigation }: any) => {
 
   return (
     <Layout style={styles.container}>
+      <LocationCEPComponent />
       <ScrollView style={{ flex: 1 }}>
         <Text category='h1' style={styles.title}>{product.title}</Text>
 
@@ -112,7 +117,6 @@ const ProductDetail = ({ route, navigation }: any) => {
           Adicionar ao Carrinho
         </Button>
 
-        <LocationCEPComponent />
         <Layout style={styles.detailsContainer}>
           <Text style={styles.seller}>Vendedor: {product.seller}</Text>
           <Text style={styles.description}>{product.description}</Text>
