@@ -24,12 +24,15 @@ const apiService = {
     return response.data;
   },
 
-  getCartItemsById: async (cartId: string) => { 
+  // Método para buscar os itens do carrinho com base no ID
+  getCartItemsById: async (cartId: string) => {
+    try {
       const response = await api.get(`/cart/${cartId}`);
-      console.log('response', response);
-      
-      return response.data; // Supondo que a API retorne um array de produtos
-    
+      return response.data; // Supondo que a API retorne um array de produtos no carrinho
+    } catch (error) {
+      console.error('Erro ao buscar itens do carrinho:', error);
+      throw error;
+    }
   },
 
   getCartItems: async (): Promise<Product[]> => {
@@ -77,9 +80,15 @@ const apiService = {
     return response.data;
   },
 
-  addToCart: async (item: { productId: any, quantity: any, user: any }) => {
-    const response = await api.post('/cart', item);
-    return response.data;
+  // Método para adicionar produtos ao carrinho
+  addToCart: async (cartData: { user: string; products: { quantity: number; productId: string }[] }) => {
+    try {
+      const response = await api.post('/cart', cartData);
+      return response.data; // Supondo que a resposta da API retorne o ID do carrinho e outros detalhes
+    } catch (error) {
+      console.error('Erro ao adicionar ao carrinho:', error);
+      throw error;
+    }
   },
 
   processTransaction: async (transactionData: any) => {

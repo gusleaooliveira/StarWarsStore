@@ -17,6 +17,7 @@ const ProductDetail = ({ route, navigation }: any) => {
   const { user } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [cartItems, setCartItems] = useState<{ quantity: number, productId: string }[]>([]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -37,19 +38,24 @@ const ProductDetail = ({ route, navigation }: any) => {
         return;
       }
 
-      const cartItem = {
-        productId: product?.id,
+      const newCartItem = {
         quantity,
-        user: user?.id,
+        productId: product?.id as string,
       };
 
-      console.log(cartItem); // Mostrar o ID do produto no console
-      
-      const response = await apiService.addToCart(cartItem);
+      const updatedCartItems = [...cartItems, newCartItem];
+      setCartItems(updatedCartItems);
+
+      const cartPayload = {
+        user: user.id,
+        products: updatedCartItems,
+      };
+
+      const response = await apiService.addToCart(cartPayload);
       ToastAndroid.show('Produto adicionado ao carrinho!', ToastAndroid.SHORT);
 
       // Salva o ID do carrinho no AsyncStorage
-      const cartId = response.id; // Supondo que o ID do produto seja o ID do carrinho
+      const cartId = response.id; // Supondo que a resposta da API retorne o ID do carrinho
       await AsyncStorage.setItem('cartId', cartId.toString());
     } catch (error) {
       console.error('Erro ao adicionar ao carrinho:', error);
